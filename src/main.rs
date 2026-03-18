@@ -61,7 +61,9 @@ fn main() {
     // Start processing!
     println!(":b Back  :s Skip  :c Change category  :q Save & Quit  :q! Quit without Saving");
     println!();
-    if let Err(err) = process::process_file(&file_path, &variants_path, &category) {
+    if let Err(err) =
+        process::process_file(&file_path, &variants_path, &category, cli.omit_existing)
+    {
         print_err(err);
     }
 }

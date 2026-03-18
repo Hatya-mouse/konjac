@@ -6,6 +6,7 @@ pub(super) fn process_file(
     file_path: &Path,
     variants_path: &Path,
     category_name: &str,
+    omit_existing: bool,
 ) -> Result<(), String> {
     // Get the file contents
     let file_contents = std::fs::read_to_string(file_path).unwrap_or_default();
@@ -20,7 +21,7 @@ pub(super) fn process_file(
     let mut current_category = get_or_create_category(&contents, category_name);
 
     // Get the variants to process
-    let variants: Vec<&str> = variants_file.lines().collect();
+    let variants: Vec<&str> = variants_file.lines().filter(|l| !l.is_empty()).collect();
 
     // Create a new rustyline editor
     let mut rl = rustyline::DefaultEditor::new().unwrap();
@@ -33,6 +34,12 @@ pub(super) fn process_file(
             .get(variant)
             .and_then(|v| v.as_str())
             .unwrap_or_default();
+
+        // If the omit_existing flag is set, skip variants that already exist
+        if omit_existing && !initial_value.is_empty() {
+            i += 1;
+            continue;
+        }
 
         // Add the variant to the parsed file
         match ask_for_message(i, variant, initial_value, &mut rl)? {
