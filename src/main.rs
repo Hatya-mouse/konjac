@@ -1,5 +1,7 @@
 mod fancy_print;
 mod file_io;
+mod process;
+mod user_message;
 
 use crate::{fancy_print::print_err, file_io::validate_file_path};
 use clap::Parser;
@@ -28,17 +30,17 @@ fn main() {
     let cli = Cli::parse();
 
     // Get the file path from the CLI argument
-    let file_path = match validate_file_path(&cli.path) {
+    let file_path = match validate_file_path(&cli.path, false) {
         Ok(path) => path,
         Err(err) => {
-            print_err(err);
+            print_err(format!("File path: {}", err));
             return;
         }
     };
-    let variants_path = match validate_file_path(&cli.variants) {
+    let variants_path = match validate_file_path(&cli.variants, true) {
         Ok(path) => path,
         Err(err) => {
-            print_err(err);
+            print_err(format!("Variants path: {}", err));
             return;
         }
     };
@@ -51,4 +53,9 @@ fn main() {
             .map(|p| p.to_string())
             .unwrap_or_default()
     });
+
+    // Start processing!
+    if let Err(err) = process::process_file(&file_path, &variants_path, &category) {
+        print_err(err);
+    }
 }

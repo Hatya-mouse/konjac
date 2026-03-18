@@ -14,12 +14,15 @@ impl Display for FileValidationError {
     }
 }
 
-pub(super) fn validate_file_path(path_str: &str) -> Result<PathBuf, FileValidationError> {
+pub(super) fn validate_file_path(
+    path_str: &str,
+    should_exist: bool,
+) -> Result<PathBuf, FileValidationError> {
     let path = PathBuf::from(path_str);
-    if !path.exists() {
+    if should_exist && !path.exists() {
         return Err(FileValidationError::NotFound(path_str.to_string()));
     }
-    if !path.is_file() {
+    if path.is_dir() {
         return Err(FileValidationError::NotAFile(path_str.to_string()));
     }
     Ok(path)
