@@ -21,4 +21,4 @@ fi
 
 curl -L "https://github.com/Hatya-mouse/konjac/releases/download/${VERSION}/konjac-${TARGET}.tar.gz" | tar -xz
 sudo mv konjac /usr/local/bin/
-echo "✓ Installed Knojac ${VERSION}"
+echo "✓ Installed Konjac ${VERSION}"
