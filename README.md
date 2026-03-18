@@ -1,6 +1,6 @@
-# Knojac
+# Konjac
 
-Knojac is a simple CLI tool to easily make a localization TOML file.
+Konjac is a simple CLI tool to easily make a localization TOML file.
 
 ## Install
 
