@@ -60,6 +60,22 @@ pub(super) fn process_file(
             UserCmd::Kill => {
                 return Ok(());
             }
+            UserCmd::Jump(jump_index) => {
+                if jump_index < variants.len() {
+                    println!(
+                        "{} to {}",
+                        "Jumped".green().bold(),
+                        jump_index.blue().bold()
+                    );
+                    i = jump_index;
+                } else {
+                    println!(
+                        "{} Number of variants: {}",
+                        "Index out of bounds.".red().bold(),
+                        variants.len()
+                    );
+                }
+            }
             UserCmd::Category(new_category_name) => {
                 contents.insert(
                     current_category_name.to_string(),

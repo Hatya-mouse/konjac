@@ -6,6 +6,7 @@ pub enum UserCmd {
     Skip,
     Quit,
     Kill,
+    Jump(usize),
     Category(String),
     Message(String),
     Retry,
@@ -60,6 +61,20 @@ fn parse_command(input: &str, variant: &str) -> Result<UserCmd, String> {
         ":s" => {
             println!("{} {}", "Skipped".cyan().bold(), variant);
             Ok(UserCmd::Skip)
+        }
+        ":j" => {
+            // If the user enters an invalid index, prompt them to re-enter
+            let mut input = None;
+            while input.is_none() {
+                println!("* Enter the index of the variant to jump to");
+                stdout().flush().unwrap();
+
+                let parsed_input = get_input().map_err(|e| e.to_string())?;
+                input = parsed_input.parse::<usize>().ok();
+            }
+            let parsed_index = input.unwrap();
+
+            Ok(UserCmd::Jump(parsed_index))
         }
         ":c" => {
             println!("* Enter the new category name");
