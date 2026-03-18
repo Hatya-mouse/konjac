@@ -5,6 +5,9 @@ mod user_message;
 
 use crate::{fancy_print::print_err, file_io::validate_file_path};
 use clap::Parser;
+use owo_colors::OwoColorize;
+
+const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -27,6 +30,8 @@ struct Cli {
 }
 
 fn main() {
+    println!("{} v{}", " Konjac ".on_black().bold(), VERSION);
+
     let cli = Cli::parse();
 
     // Get the file path from the CLI argument
@@ -55,6 +60,8 @@ fn main() {
     });
 
     // Start processing!
+    println!(":b Back  :s Skip  :c Change category  :q Save & Quit  :q! Quit without Saving");
+    println!();
     if let Err(err) = process::process_file(&file_path, &variants_path, &category) {
         print_err(err);
     }

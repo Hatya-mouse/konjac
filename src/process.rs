@@ -1,6 +1,6 @@
-use std::{collections::HashMap, path::Path};
-
 use crate::user_message::{UserCmd, ask_for_message};
+use owo_colors::OwoColorize;
+use std::{collections::HashMap, path::Path};
 
 pub(super) fn process_file(
     file_path: &Path,
@@ -22,25 +22,32 @@ pub(super) fn process_file(
     // Get the variants to process
     let variants: Vec<&str> = variants_file.lines().collect();
 
+    // Create a new rustyline editor
+    let mut rl = rustyline::DefaultEditor::new().unwrap();
+
     // Iterate over the variants
     let mut i = 0;
     while i < variants.len() {
         let variant = variants[i];
-
-        if current_category.contains_key(variant) {
-            i += 1;
-            continue;
-        }
+        let initial_value = current_category
+            .get(variant)
+            .and_then(|v| v.as_str())
+            .unwrap_or_default();
 
         // Add the variant to the parsed file
-        match ask_for_message(variant) {
+        match ask_for_message(i, variant, initial_value, &mut rl)? {
             UserCmd::Back => {
-                i = i.saturating_sub(1);
+                if i > 0 {
+                    i -= 1;
+                } else {
+                    println!("Already at the first variant");
+                }
             }
             UserCmd::Skip => {
                 i += 1;
             }
             UserCmd::Quit => {
+                println!();
                 break;
             }
             UserCmd::Kill => {
@@ -60,7 +67,17 @@ pub(super) fn process_file(
             }
             UserCmd::Retry => {}
         }
+
+        println!();
     }
+
+    // Print the result
+    println!(
+        "{} {}/{}",
+        "Completed".green().bold(),
+        current_category.len(),
+        variants.len()
+    );
 
     // Put back the updated category table into the parsed file
     contents.insert(

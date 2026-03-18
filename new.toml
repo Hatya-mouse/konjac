@@ -1,4 +1,0 @@
-[Cargo]
-"[package]" = "Hello"
-'name = "konjac"' = 'name = "konjac"'
-'version = "0.1.0"' = ""

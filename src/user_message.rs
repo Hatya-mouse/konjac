@@ -1,5 +1,5 @@
 use owo_colors::OwoColorize;
-use std::io::{Write, stdin, stdout};
+use std::io::{Write, stdout};
 
 pub enum UserCmd {
     Back,
@@ -11,47 +11,71 @@ pub enum UserCmd {
     Retry,
 }
 
-pub fn ask_for_message(variant: &str) -> UserCmd {
-    print!("{}: ", variant.bold());
+pub fn ask_for_message(
+    index: usize,
+    variant: &str,
+    initial_value: &str,
+    rl: &mut rustyline::DefaultEditor,
+) -> Result<UserCmd, String> {
+    println!("[{}] {}", index, variant.bold());
     stdout().flush().unwrap();
 
-    parse_command(&get_input(), variant)
+    // Get the input
+    let input = rl
+        .readline_with_initial("> ", (initial_value, ""))
+        .map(|s| s.trim().to_string())
+        .map_err(|e| e.to_string())?;
+    rl.add_history_entry(&input).map_err(|e| e.to_string())?;
+    // Parse the input
+    parse_command(&input, variant)
 }
 
-fn get_input() -> String {
-    let mut input = String::new();
-    stdin().read_line(&mut input).unwrap();
-    input.trim().to_string()
+fn get_input() -> Result<String, rustyline::error::ReadlineError> {
+    let mut rl = rustyline::DefaultEditor::new().unwrap();
+    rl.readline("> ").map(|s| s.trim().to_string())
 }
 
-fn parse_command(input: &str, variant: &str) -> UserCmd {
+fn parse_command(input: &str, variant: &str) -> Result<UserCmd, String> {
     match input {
-        ":q" => UserCmd::Quit,
+        ":q" => Ok(UserCmd::Quit),
         ":q!" => {
             // Confirm quit without saving
-            print!(
+            println!(
                 "* {}",
-                "Are you sure you want to quit without saving? [y/N]: ".bold()
+                "Are you sure you want to quit without saving? [y/N]"
+                    .yellow()
+                    .bold()
             );
             stdout().flush().unwrap();
 
-            if get_input() == "y" {
+            let input = get_input().map_err(|e| e.to_string())?;
+            if input == "y" {
                 println!("{}", "Aborting without saving...".red().bold());
-                UserCmd::Kill
+                Ok(UserCmd::Kill)
             } else {
-                UserCmd::Retry
+                Ok(UserCmd::Retry)
             }
         }
-        ":b" => UserCmd::Back,
+        ":b" => Ok(UserCmd::Back),
         ":s" => {
             println!("{} {}", "Skipped".cyan().bold(), variant);
-            UserCmd::Skip
+            Ok(UserCmd::Skip)
         }
         ":c" => {
-            print!("* Enter the new category name: ");
+            println!("* Enter the new category name");
             stdout().flush().unwrap();
-            UserCmd::Category(get_input())
+
+            let input = get_input().map_err(|e| e.to_string())?;
+            println!(
+                "{} the category name to {}",
+                "Changed".green().bold(),
+                input.blue().bold()
+            );
+            Ok(UserCmd::Category(input))
         }
-        _ => UserCmd::Message(input.to_string()),
+        _ => {
+            println!("{} \"{}\"", "✓".green(), input);
+            Ok(UserCmd::Message(input.to_string()))
+        }
     }
 }
