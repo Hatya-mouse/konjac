@@ -30,9 +30,8 @@ struct Cli {
 }
 
 fn main() {
-    println!("{} v{}", " Konjac ".on_black().bold(), VERSION);
-
     let cli = Cli::parse();
+    println!("{} v{}", " Konjac ".on_black().bold(), VERSION);
 
     // Get the file path from the CLI argument
     let file_path = match validate_file_path(&cli.path, false) {
