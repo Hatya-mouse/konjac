@@ -28,6 +28,8 @@ pub(super) fn process_file(
 
     // Iterate over the variants
     let mut i = 0;
+    // Used when jumping to a variant with omit_existing set to true
+    let mut ignore_omitting = false;
     while i < variants.len() {
         let variant = variants[i];
         let initial_value = current_category
@@ -36,10 +38,11 @@ pub(super) fn process_file(
             .unwrap_or_default();
 
         // If the omit_existing flag is set, skip variants that already exist
-        if omit_existing && !initial_value.is_empty() {
+        if !ignore_omitting && omit_existing && !initial_value.is_empty() {
             i += 1;
             continue;
         }
+        ignore_omitting = false;
 
         // Add the variant to the parsed file
         match ask_for_message(i, variant, initial_value, &mut rl)? {
@@ -68,6 +71,7 @@ pub(super) fn process_file(
                         jump_index.blue().bold()
                     );
                     i = jump_index;
+                    ignore_omitting = true;
                 } else {
                     println!(
                         "{} Number of variants: {}",
