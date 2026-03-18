@@ -16,17 +16,17 @@ struct Cli {
     path: String,
 
     /// A variant text file to load variants from.
-    #[arg(short, long, value_name = "FILE")]
+    #[arg(long, short, value_name = "FILE")]
     variants: String,
-
-    /// A string to use as the message key.
-    #[arg(long, value_name = "KEY", default_value = "message")]
-    key: String,
 
     /// A string to use as the category name.
     /// Defaults to the variant file name.
     #[arg(long, value_name = "CATEGORY")]
     category: Option<String>,
+
+    /// Whether to omit the existing variants.
+    #[arg(long, short, default_value = "false")]
+    omit_existing: bool,
 }
 
 fn main() {
