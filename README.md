@@ -4,6 +4,13 @@ Konjac is a simple CLI tool to easily make a localization TOML file.
 
 ## Install
 
+### Install via Cargo
+
+`konjac` can be installed easily using cargo:
+```
+cargo install konjac
+```
+
 ### macOS & Linux
 
 Open your terminal and run:

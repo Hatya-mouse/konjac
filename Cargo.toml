@@ -2,6 +2,11 @@
 name = "konjac"
 version = "0.1.4"
 edition = "2024"
+license = "Apache-2.0"
+description = "A simple utility to create a toml localization file."
+repository = "https://github.com/hatya-mouse/konjac"
+homepage = "https://hatya.dev"
+readme = "README.md"
 
 [dependencies]
 clap = { version = "4.6.0", features = ["derive"] }
